@@ -1,0 +1,915 @@
+/* SoftOmni — ธีม "Professional SaaS" อ้างอิงดีไซน์ระบบจาก Stitch (Softomni Professional Dashboard)
+   Deep Navy + Slate Gray + Electric Blue accent, มินิมอล ใช้เส้นขอบบางแทนเงาหนา
+   คงชื่อตัวแปรเดิมไว้ทั้งหมด เปลี่ยนแค่ค่าสี เพื่อไม่ต้องไล่แก้ทุกไฟล์ที่อ้างอิงตัวแปร
+   เขียว (--pen-green) สงวนไว้ให้ "ตอบถูก" เท่านั้น แยกจากเขียวมิ้นท์ของแบรนด์ (--mint)
+   เพื่อไม่ให้สีบอกผลตอบปนกับสีแบรนด์ตกแต่ง
+   หมายเหตุฟอนต์: ดีไซน์ต้นแบบใช้ Hanken Grotesk แต่ฟอนต์นั้นไม่มีตัวอักษรไทย เนื้อหาแอปนี้เป็นไทย
+   เกือบทั้งหมด จึงคงฟอนต์ IBM Plex Sans Thai เดิมไว้ (อ่านไทยได้จริง) แล้วรับมาแค่โทนสี/ระยะห่าง/ความโค้ง
+*/
+:root{
+  --paper:#f8fafc;
+  --grid:#dfe6f2;
+  --card:#ffffff;
+  --graphite:#0f172a;   /* Deep Navy — สีหลักของดีไซน์ */
+  --muted:#64748b;      /* Slate Gray — สีรอง/ข้อความรอง */
+  --line:#e2e8f0;
+
+  --pen-blue:#0ea5e9;  --pen-blue-d:#0284c7;   /* Electric Blue accent */
+  --btn-primary:#0f172a;   /* ปุ่มหลัก: อ้างอิงจริงจาก Stitch เป็นสีดำ/กรมเข้ม ไม่ใช่ฟ้า (ฟ้าเป็นสีเน้นเท่านั้น) */
+  --pen-green:#22a559; --pen-green-d:#178042;
+  --pen-red:#e0392c;   --pen-red-d:#ab2620;
+  --marker:#ffd84d;
+  --xp-ink:#8a6a00;
+
+  --mint:#17c9a8; --mint-d:#0f9d82;   /* สีที่สองของแบรนด์ ใช้ตกแต่งเท่านั้น ไม่ใช้แทนสีบอกผลตอบ */
+
+  --radius:10px;        /* ดีไซน์ต้นแบบเน้นความโค้งนุ่มแต่ไม่มาก (การ์ด/ปุ่ม 8-12px) */
+  --radius-lg:14px;
+  --shadow-ambient:0 10px 30px rgba(15,23,42,.08);   /* เงาเดียวที่ใช้ ใช้กับ dropdown/modal เท่านั้น */
+  --tab-h:64px;
+  --side-w:250px;
+
+  --ui:'IBM Plex Sans Thai','Noto Sans Thai','Segoe UI',system-ui,sans-serif;
+  --body:'IBM Plex Sans Thai Looped','IBM Plex Sans Thai','Noto Sans Thai',system-ui,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0c1120; --grid:#1a2340; --card:#141b32;
+    --graphite:#e9ecf7; --muted:#8b93b5; --line:#232c4d;
+    --pen-blue:#38bdf8; --pen-blue-d:#0ea5e9;
+    --btn-primary:#38bdf8;   /* ดำล้วนกลืนกับพื้นมืดในธีมมืด จึงใช้ฟ้าแทนเพื่อความคมชัด */
+    --pen-green:#3ec97a; --pen-green-d:#279457;
+    --pen-red:#ff6a5c;   --pen-red-d:#c8483b;
+    --xp-ink:#ffd84d;
+    --mint:#2fe3c0; --mint-d:#1aa88d;
+    --shadow-ambient:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0c1120; --grid:#1a2340; --card:#141b32;
+  --graphite:#e9ecf7; --muted:#8b93b5; --line:#232c4d;
+  --pen-blue:#38bdf8; --pen-blue-d:#0ea5e9;
+  --pen-green:#3ec97a; --pen-green-d:#279457;
+  --pen-red:#ff6a5c;   --pen-red-d:#c8483b;
+  --xp-ink:#ffd84d;
+  --mint:#2fe3c0; --mint-d:#1aa88d;
+  --shadow-ambient:0 10px 30px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  min-height:100%;
+  font-family:var(--body);
+  color:var(--graphite);
+  background-color:var(--paper);
+  -webkit-font-smoothing:antialiased;
+  /* กันแถบแท็บล่างทับปุ่มท้ายหน้า: เผื่อความสูงแท็บ + ระยะหายใจ + ขอบจอ (มือถือเท่านั้น) */
+  padding-bottom:calc(var(--tab-h) + 36px + env(safe-area-inset-bottom));
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+
+/* ---------- แถบบน ---------- */
+#topbar{
+  position:sticky;top:0;z-index:20;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  padding:10px 16px;display:flex;align-items:center;gap:13px;min-height:54px;
+}
+#topbar .brand{
+  display:flex;align-items:center;gap:9px;
+  font-family:var(--ui);font-weight:700;font-size:16.5px;letter-spacing:-.2px;color:var(--graphite);
+}
+#topbar .brand .brandmark{width:26px;height:26px;border-radius:7px;display:block}
+#topbar .spacer{flex:1}
+.stat{font-family:var(--mono);font-weight:600;font-size:14px;display:flex;align-items:center;gap:4px}
+.stat.xp{color:var(--xp-ink)}
+.stat.streak,.stat.heart{color:var(--pen-red)}
+.backbtn{
+  background:none;border:0;font-size:22px;cursor:pointer;color:var(--muted);
+  line-height:1;padding:4px 6px;border-radius:8px;
+}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{
+  outline:3px solid var(--pen-blue);outline-offset:2px;
+}
+
+/* ---------- โครงหน้า ---------- */
+#app{max-width:620px;margin:0 auto;padding:20px 16px 32px}
+/* เฟดเข้าเบาๆ ทุกครั้งที่สลับหน้า (render() เพิ่ม/ลบคลาสนี้เพื่อรีสตาร์ท animation) */
+@keyframes pagefade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+#app.pagefade{animation:pagefade .25s ease}
+@media (min-width:880px){
+  #app{max-width:880px;padding:28px 32px 40px;margin-left:var(--side-w)}
+  #topbar{margin-left:var(--side-w);padding-left:24px;padding-right:24px}
+  #topbar .brand{display:none}         /* แถบข้างแสดงโลโก้อยู่แล้ว ไม่ต้องซ้ำ */
+  #toast{left:calc(50% + var(--side-w)/2)}
+}
+.crumbs{font-size:12.5px;color:var(--muted);margin-bottom:10px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.crumbs a{color:var(--muted);text-decoration:none}
+.crumbs a:hover{color:var(--pen-blue);text-decoration:underline}
+.crumbs span:not(.sep){color:var(--graphite);font-weight:600}
+.crumbs .sep{color:var(--line);margin:0 2px;font-weight:400}
+h1{font-family:var(--ui);font-size:25px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;line-height:1.35}
+h2{font-family:var(--ui);font-size:17px;font-weight:700;margin-bottom:10px}
+.sub{color:var(--muted);font-size:14px;line-height:1.65;margin-bottom:20px}
+.note{font-size:12.5px;color:var(--muted);line-height:1.7}
+
+/* ---------- ปุ่ม ---------- */
+/* อ้างอิงจากภาพจริงทั้ง 11 หน้าจอใน Stitch: ปุ่มหลักส่วนใหญ่เป็นสีดำ/กรมเข้มเกือบดำ (เริ่มเรียน,
+   ทำแบบฝึกหัด, เรียนต่อ, ถัดไป) ไม่ใช่สีฟ้า — ฟ้าเป็นแค่สีเน้น (ลิงก์, แท็บที่เลือก, เส้นกราฟ) */
+.btn{
+  display:block;width:100%;border:0;border-radius:var(--radius);cursor:pointer;
+  font-family:var(--ui);font-weight:700;font-size:16px;
+  padding:14px 18px;color:#fff;background:var(--btn-primary);
+  box-shadow:0 1px 2px rgba(15,23,42,.08);
+  transition:transform .15s ease,box-shadow .15s ease,background-color .15s ease;
+}
+.btn:hover{background:color-mix(in srgb,var(--btn-primary) 85%,#000);box-shadow:0 6px 16px rgba(15,23,42,.25);transform:translateY(-1px)}
+.btn:active{transform:translateY(0);box-shadow:0 1px 2px rgba(15,23,42,.08)}
+.btn.blue{background:var(--pen-blue)}
+.btn.blue:hover{background:var(--pen-blue-d);box-shadow:0 6px 16px color-mix(in srgb,var(--pen-blue) 35%,transparent)}
+.btn.green{background:var(--pen-green)}
+.btn.green:hover{background:var(--pen-green-d);box-shadow:0 6px 16px color-mix(in srgb,var(--pen-green) 35%,transparent)}
+.btn.red{background:var(--pen-red)}
+.btn.red:hover{background:var(--pen-red-d);box-shadow:0 6px 16px color-mix(in srgb,var(--pen-red) 35%,transparent)}
+.btn.ghost{background:transparent;color:var(--graphite);box-shadow:none;border:1.5px solid var(--line)}
+.btn.ghost:hover{background:color-mix(in srgb,var(--pen-blue) 6%,transparent);border-color:color-mix(in srgb,var(--pen-blue) 40%,var(--line));transform:translateY(-1px)}
+.btn.ghost:active{transform:translateY(0)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.btn.sm{width:auto;display:inline-block;padding:9px 14px;font-size:13.5px}
+.row{display:flex;gap:10px}
+.row>.btn{flex:1}
+
+/* ---------- การ์ด ---------- */
+.card,.qcard,.levelcard,.unit{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  transition:border-color .15s ease,box-shadow .15s ease,transform .1s ease;
+}
+.card{padding:15px;margin-bottom:10px}
+.card .k{font-family:var(--ui);font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.3px}
+.card .v{font-family:var(--mono);font-size:23px;font-weight:600;margin-top:3px}
+
+/* ---------- วิซาร์ด: จุดความคืบหน้า + การ์ดเลือก (เป้าหมาย/ระดับความเข้าใจ) ---------- */
+.stepdots{display:flex;justify-content:center;gap:6px;margin-bottom:6px}
+.stepdots span{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background-color .2s ease,transform .2s ease}
+.stepdots span.done{background:var(--pen-green)}
+.stepdots span.on{background:var(--pen-blue);transform:scale(1.4)}
+
+.goalcards{display:grid;gap:10px;margin-bottom:4px}
+.goalcard{
+  display:block;width:100%;text-align:left;cursor:pointer;
+  background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;transition:border-color .15s ease,background-color .15s ease,transform .1s ease;
+}
+.goalcard:hover{border-color:color-mix(in srgb,var(--pen-blue) 45%,var(--line))}
+.goalcard:active{transform:translateY(1px)}
+.goalcard.sel{border-color:var(--pen-blue);background:color-mix(in srgb,var(--pen-blue) 6%,var(--card))}
+.goalcard .t{display:block;font-family:var(--ui);font-weight:700;font-size:15px;color:var(--graphite)}
+.goalcard.sel .t{color:var(--pen-blue)}
+.goalcard .d{display:block;font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.5}
+
+/* ---------- เลือกระดับชั้น ---------- */
+.levels{display:grid;gap:10px}
+.levelcard{
+  display:flex;align-items:center;gap:14px;width:100%;cursor:pointer;
+  padding:15px;text-align:left;font-family:var(--body);color:var(--graphite);
+}
+.levelcard:hover{border-color:color-mix(in srgb,var(--pen-blue) 35%,var(--line));box-shadow:var(--shadow-ambient);transform:translateY(-1px)}
+.levelcard:active{transform:translateY(1px);box-shadow:none}
+.levelcard>span:not(.badge){display:block;min-width:0}
+.levelcard .badge{
+  width:48px;height:48px;flex:0 0 48px;border-radius:6px;display:grid;place-items:center;
+  color:#fff;font-family:var(--mono);font-weight:600;font-size:16px;
+}
+.levelcard .t{display:block;font-family:var(--ui);font-weight:700;font-size:15.5px}
+.levelcard .d{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.levelcard .pct{margin-left:auto;font-family:var(--mono);font-weight:600;font-size:15px;color:var(--pen-blue)}
+
+/* ---------- แผนที่หน่วยการเรียนรู้ ---------- */
+.strandlabel{
+  font-family:var(--ui);font-size:11.5px;font-weight:700;color:var(--muted);
+  letter-spacing:.7px;margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line);
+}
+.unit{
+  display:flex;gap:13px;align-items:center;width:100%;cursor:pointer;text-align:left;
+  padding:13px;margin-bottom:9px;font-family:var(--body);color:var(--graphite);
+}
+.unit:not(.locked):hover{border-color:color-mix(in srgb,var(--pen-blue) 35%,var(--line));box-shadow:var(--shadow-ambient);transform:translateY(-1px)}
+.unit:active{transform:translateY(1px);box-shadow:none}
+.unit.locked{opacity:.45}
+.unit>span:not(.node){display:block;min-width:0}
+/* จุดบนกริด: สี่เหลี่ยมแบบจุดพิกัด ไม่ใช่วงกลม เพราะนี่คือแอปคณิตศาสตร์ */
+.unit .node{
+  width:48px;height:48px;flex:0 0 48px;border-radius:6px;display:grid;place-items:center;
+  font-size:21px;background:var(--paper);border:1.5px solid var(--line);
+}
+.unit.done .node{background:var(--marker);border-color:#d9b400}
+.unit .t{display:block;font-family:var(--ui);font-weight:700;font-size:14.5px;line-height:1.45}
+.unit .stars{display:block;font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:3px}
+
+/* ---------- โจทย์ ---------- */
+.qcard{padding:22px 20px;margin-bottom:18px}
+
+/* หน้าก่อนเข้าติวเตอร์: สอนจากโจทย์จริงในหน่วย ไม่แต่งเนื้อหา */
+.teachcard{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 18px 16px;margin:8px 0 18px;
+}
+.teachcard .k{font-family:var(--ui);font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.3px;margin-bottom:8px}
+.teachcard p{margin:0 0 12px;font-size:14.5px;line-height:1.6;color:var(--graphite)}
+.teach-k{font-family:var(--ui);font-size:12px;font-weight:700;color:var(--muted);margin:12px 0 6px !important}
+.teachlist{margin:0 0 8px;padding-left:18px}
+.teachlist li{font-size:14.5px;line-height:1.55;margin:0 0 6px;color:var(--graphite)}
+.teachq{
+  font-family:var(--ui);font-size:16px;font-weight:600;line-height:1.55;
+  background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px 14px;
+}
+.plangraph{
+  border-radius:var(--radius);overflow:hidden;margin:8px 0 18px;
+  border:1px solid var(--line);background:#0f172a;
+}
+.plangraph .note{margin:0}
+.plansummary{margin:8px 0 8px}
+.plancols{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:14px}
+@media(min-width:560px){.plancols{grid-template-columns:1fr 1fr}}
+.weekslots{margin:8px 0 0;padding-left:18px}
+.weekslots li{font-size:14px;line-height:1.5;margin:0 0 4px;color:var(--graphite)}
+.plandots{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 6px}
+.plandot{
+  width:12px;height:12px;border-radius:50%;background:#cbd5e1;
+  border:1px solid var(--line);display:inline-block;
+}
+.plandot.done{background:#0ea5e9;border-color:#0ea5e9}
+.plandot.gap{background:#f59e0b;border-color:#f59e0b}
+.planpath{list-style:none;margin:0;padding:0}
+.planpath li{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 14px;margin:0 0 8px;
+}
+.planpath li.insert{border-color:color-mix(in srgb,#f59e0b 55%,var(--line));background:color-mix(in srgb,#f59e0b 8%,var(--card))}
+.planpath .n{
+  flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--ui);font-size:13px;font-weight:700;background:var(--paper);border:1px solid var(--line);
+}
+.planpath li.insert .n{background:#f59e0b;color:#fff;border-color:#f59e0b}
+.planpath li > div{flex:1;min-width:0}
+.planpath li b{display:block;font-family:var(--ui);font-size:15px;margin-bottom:2px}
+.planpath li .note{margin:0}
+.planpath li .btn{flex:0 0 auto;margin-top:2px;width:auto}
+.modcard.insertcard{border-color:color-mix(in srgb,#f59e0b 50%,var(--line))}
+.splitsteps{margin:0;padding-left:22px}
+.splitsteps li{margin:0 0 16px;font-size:14.5px;line-height:1.55;color:var(--graphite)}
+.splitsteps li p{margin:6px 0}
+.splitsteps .btn{margin-top:6px;width:auto}
+#topicVerdict p.ok{color:var(--pen-green);font-weight:600}
+.choice:disabled{cursor:default;opacity:.95}
+.qtext{
+  font-family:var(--ui);font-size:20px;font-weight:600;line-height:1.65;
+  word-break:break-word;font-variant-numeric:tabular-nums;
+}
+.qimg{max-width:100%;border-radius:8px;margin-top:14px;display:block}
+.choices{display:grid;gap:9px;margin-bottom:16px}
+/* แถวตัวเลือกแบบเรียบ (อ้างอิง Stitch: เส้นขอบบางสม่ำเสมอ ไม่มีแถบสีหนาที่ขอบซ้าย)
+   คงป้าย ก./ข./ค./ง. ไว้ (ไม่ใช้ radio เปล่าแบบต้นแบบ) เพราะข้อสอบไทยจริงใช้ตัวเลือกแบบนี้
+   นักเรียนคุ้นเคยกว่า — เป็นจุดที่ตั้งใจต่างจาก Stitch เพราะมีเหตุผลด้านการใช้งานจริงรองรับ */
+.choice{
+  text-align:left;padding:14px 16px;border-radius:var(--radius);cursor:pointer;
+  font-family:var(--body);font-weight:500;font-size:15.5px;
+  background:var(--card);color:var(--graphite);
+  border:1.5px solid var(--line);
+  display:flex;gap:12px;align-items:baseline;
+}
+/* ป้ายข้อ ก ข ค ง แบบข้อสอบไทย */
+.choice::before{
+  content:attr(data-label);font-family:var(--mono);font-size:13px;font-weight:600;
+  color:var(--muted);flex:0 0 auto;
+}
+.choice{transition:border-color .15s ease,background-color .15s ease,transform .1s ease}
+.choice:hover{border-color:color-mix(in srgb,var(--pen-blue) 35%,var(--line))}
+.choice:active{transform:translateY(1px)}
+.choice.sel{border-color:var(--pen-blue);background:color-mix(in srgb,var(--pen-blue) 8%,var(--card))}
+.choice.sel::before{color:var(--pen-blue)}
+.choice.ok{border-color:var(--pen-green);background:color-mix(in srgb,var(--pen-green) 10%,var(--card))}
+.choice.bad{border-color:var(--pen-red);background:color-mix(in srgb,var(--pen-red) 10%,var(--card))}
+input[type=text],input[type=email],input[type=number],textarea,select{
+  width:100%;font-family:var(--mono);font-size:17px;font-weight:500;color:var(--graphite);
+  padding:13px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);
+}
+textarea{font-family:var(--body);min-height:86px;resize:vertical;font-size:15px;font-weight:400}
+select{font-family:var(--body)}
+input:focus,textarea:focus,select:focus{
+  outline:0;border-color:var(--pen-blue);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--pen-blue) 18%,transparent);
+}
+label{font-family:var(--ui);display:block;font-weight:700;font-size:12.5px;margin:15px 0 6px;color:var(--muted)}
+
+/* ---------- แถบความคืบหน้าในบทเรียน ---------- */
+.pbar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;flex:1}
+.pbar>i{display:block;height:100%;background:var(--btn-primary);border-radius:99px;transition:width .3s}
+
+/* ---------- แถบเฉลย ---------- */
+.verdict{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;
+  padding:18px 16px calc(18px + env(safe-area-inset-bottom));
+  border-top:2px solid;background:var(--card);
+}
+.verdict.ok{border-top-color:var(--pen-green)}
+.verdict.bad{border-top-color:var(--pen-red)}
+.verdict .inner{max-width:620px;margin:0 auto}
+.verdict .vt{font-family:var(--ui);font-weight:700;font-size:17px;margin-bottom:6px}
+.verdict.ok .vt{color:var(--pen-green)}
+.verdict.bad .vt{color:var(--pen-red)}
+.verdict .vs{font-size:13.5px;line-height:1.7;margin-bottom:14px;color:var(--muted)}
+
+/* ---------- โหมดพูด ---------- */
+.mic{
+  width:104px;height:104px;border-radius:50%;border:0;cursor:pointer;margin:26px auto;
+  display:grid;place-items:center;font-size:40px;color:#fff;
+  background:var(--pen-blue);box-shadow:0 5px 0 var(--pen-blue-d);
+}
+.mic:active{transform:translateY(4px);box-shadow:0 1px 0 var(--pen-blue-d)}
+.mic.rec{background:var(--pen-red);box-shadow:0 5px 0 var(--pen-red-d);animation:pulse 1.1s infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.heard{text-align:center;font-size:14px;color:var(--muted);min-height:24px;margin-bottom:10px}
+.heard b{font-family:var(--mono);color:var(--pen-blue);font-size:20px}
+
+/* ---------- ผลการเรียน: พล็อตคะแนนลงระนาบพิกัด ---------- */
+.plot{display:block;margin:0 auto 10px;max-width:280px;width:100%;height:auto}
+.plot .gridline{stroke:var(--grid);stroke-width:1}
+.plot .axis{stroke:var(--line);stroke-width:1.5}
+.plot .tick{fill:var(--muted);font-family:var(--mono);font-size:7px}
+.plot .bar{fill:var(--pen-blue);opacity:.15}
+.plot .pt{fill:var(--pen-blue)}
+.plot .ptlabel{fill:var(--graphite);font-family:var(--mono);font-size:10px;font-weight:600}
+.plot .passline{stroke:var(--pen-red);stroke-width:1.5;stroke-dasharray:4 3}
+.plot .passlabel{fill:var(--pen-red);font-family:var(--mono);font-size:7px}
+
+/* ---------- ประตูทดลองเรียน ---------- */
+.authlogo{display:block;max-width:200px;height:auto;margin:4px auto 22px}
+.gate{padding:8px 0}
+.gate .mark{
+  font-family:var(--mono);font-size:40px;font-weight:600;color:var(--pen-red);
+  line-height:1;margin-bottom:12px;
+}
+.gate ul{list-style:none;margin:18px 0}
+.gate li{
+  font-size:14.5px;line-height:1.6;padding:10px 0 10px 26px;position:relative;
+  border-bottom:1px solid var(--line);
+}
+.gate li::before{
+  content:'✓';position:absolute;left:2px;top:10px;
+  color:var(--pen-green);font-family:var(--mono);font-weight:600;
+}
+.trialbar{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 13px;border-radius:10px;
+  background:color-mix(in srgb,var(--marker) 22%,var(--card));
+  border:1px solid color-mix(in srgb,var(--marker) 55%,var(--line));
+  font-size:13px;line-height:1.5;
+}
+.trialbar b{font-family:var(--mono)}
+.trialbar button{
+  margin-left:auto;flex:0 0 auto;background:none;border:0;cursor:pointer;
+  font-family:var(--ui);font-weight:700;font-size:13px;color:var(--pen-blue);
+  text-decoration:underline;padding:2px 4px;
+}
+
+/* ---------- แถบแท็บล่าง / แถบข้าง (จอกว้าง) ----------
+   จอกว้างอ้างอิงดีไซน์แถบข้างจาก Stitch "Softomni Premium Mountain Dashboard":
+   พื้นการ์ดสีขาวตัดกับพื้นเพจสีเทาอ่อน + แถบฟ้า Electric Blue ที่ขอบซ้ายของแท็บที่กำลังเปิดอยู่ */
+#tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:25;
+  background:var(--paper);border-top:1px solid var(--line);display:flex;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+#tabbar button{
+  flex:1;background:none;border:0;cursor:pointer;padding:8px 4px 10px;
+  font-family:var(--ui);font-size:10.5px;font-weight:700;color:var(--muted);
+  display:grid;gap:2px;justify-items:center;border-radius:10px;
+  transition:color .15s ease,background-color .15s ease;
+}
+#tabbar button.on{color:var(--pen-blue)}
+#tabbar .ic{font-size:19px;transition:transform .15s ease}
+#tabbar button.on .ic{transform:scale(1.08)}
+.sidehead{display:none}   /* หัวแถบข้าง (โลโก้ + ชื่อแบรนด์) — โผล่เฉพาะจอกว้างด้านล่างนี้ */
+.sidefoot{display:none}   /* การ์ดสรุปสถิติท้ายแถบข้าง (สตรีค/คะแนน) — โผล่เฉพาะจอกว้างเช่นกัน */
+
+/* จอกว้าง: แถบล่างกลายเป็นแถบข้างซ้ายแบบถาวร แทนที่แท็บล่างของมือถือ */
+@media (min-width:880px){
+  #tabbar{
+    left:0;right:auto;top:0;bottom:0;width:var(--side-w);
+    flex-direction:column;align-items:stretch;gap:2px;padding:18px 12px;
+    background:var(--card);border-top:0;border-right:1px solid var(--line);
+    padding-bottom:18px;
+  }
+  .sidehead{
+    display:flex;align-items:center;gap:10px;padding:4px 8px 22px;
+    font-family:var(--ui);font-weight:700;font-size:16px;color:var(--graphite);
+  }
+  .sidehead img{width:34px;height:34px;border-radius:9px;display:block}
+  #tabbar button{
+    position:relative;flex:0 0 auto;flex-direction:row;justify-items:start;display:flex;align-items:center;
+    gap:12px;padding:11px 12px;font-size:14px;text-align:left;
+  }
+  #tabbar button:hover{background:var(--paper);color:var(--graphite)}
+  /* แท็บที่กำลังเปิดอยู่ = พื้นหลังฟ้าอ่อนเต็มก้อนแบบ pill (อ้างอิงดีไซน์ Stitch) ไม่ใช่แค่แถบบางที่ขอบ */
+  #tabbar button.on{
+    background:color-mix(in srgb,var(--pen-blue) 12%,var(--paper));
+    color:var(--pen-blue-d);font-weight:700;
+  }
+  #tabbar .ic{font-size:20px}
+
+  /* การ์ดโปรไฟล์ท้ายแถบข้าง — อวตารตัวอักษรแรกของอีเมล + สตรีค อ้างอิงชิปโปรไฟล์ท้ายแถบข้างของ Stitch */
+  .sidefoot{
+    display:flex;align-items:center;gap:10px;margin-top:auto;padding:10px;border-radius:var(--radius);
+    background:var(--paper);border:1px solid var(--line);
+  }
+  .sidefoot .sf-avatar{
+    flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+    background:var(--pen-blue);color:#fff;font-family:var(--ui);font-weight:700;font-size:14px;
+  }
+  .sidefoot .sf-info{min-width:0;flex:1}
+  .sidefoot .sf-name{font-family:var(--ui);font-weight:700;font-size:12.5px;color:var(--graphite);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sidefoot .sf-sub{font-size:11px;color:var(--muted);margin-top:1px}
+}
+
+/* ---------- เบ็ดเตล็ด ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pill{
+  display:inline-block;font-family:var(--ui);font-size:10.5px;font-weight:700;
+  padding:3px 8px;border-radius:4px;background:var(--paper);
+  border:1px solid var(--line);color:var(--muted);margin:0 6px 6px 0;
+}
+.empty{text-align:center;color:var(--muted);padding:52px 20px;font-size:14.5px;line-height:1.8}
+@keyframes toastup{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+.toast{
+  position:fixed;left:50%;bottom:calc(var(--tab-h) + 20px);transform:translateX(-50%);z-index:60;
+  background:var(--graphite);color:var(--paper);padding:11px 18px;border-radius:8px;
+  font-size:13.5px;font-weight:500;max-width:90vw;text-align:center;line-height:1.5;
+  animation:toastup .2s ease;
+}
+.banner{
+  background:color-mix(in srgb,var(--marker) 20%,var(--card));
+  border:1px solid color-mix(in srgb,var(--marker) 55%,var(--line));
+  border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.65;margin-bottom:16px;
+}
+.banner b{font-family:var(--mono)}
+.predictbig{font-family:var(--mono);font-size:44px;font-weight:600;color:var(--pen-blue);margin-top:4px}
+
+/* ---------- ห้องคุยกับติวเตอร์ ---------- */
+.chat{display:flex;flex-direction:column;gap:10px;min-height:180px;max-height:52vh;overflow-y:auto;padding:4px 0 8px}
+.bub{
+  max-width:86%;padding:11px 14px;border-radius:12px;font-size:14.5px;line-height:1.7;
+  white-space:pre-wrap;word-break:break-word;
+}
+.bub.me{align-self:flex-end;background:var(--pen-blue);color:#fff;border-bottom-right-radius:4px}
+.bub.ai{
+  align-self:flex-start;background:var(--card);color:var(--graphite);
+  border:1px solid var(--line);border-left:3px solid var(--pen-green);border-bottom-left-radius:4px;
+}
+.bub.typing{color:var(--muted);font-style:italic}
+.askrow{display:flex;gap:8px;align-items:center;margin-top:6px}
+.askrow input{flex:1;font-family:var(--body);font-size:15px;font-weight:400}
+.iconbtn{
+  flex:0 0 46px;width:46px;height:46px;border-radius:10px;border:1.5px solid var(--line);
+  background:var(--card);color:var(--graphite);font-size:18px;cursor:pointer;
+}
+.iconbtn.send{background:var(--pen-blue);color:#fff;border-color:var(--pen-blue)}
+.iconbtn.rec{background:var(--pen-red);color:#fff;border-color:var(--pen-red);animation:pulse 1.1s infinite}
+.iconbtn[disabled]{opacity:.45;pointer-events:none}
+
+/* ---------- หัวห้องคุยติวเตอร์ ---------- */
+.tutorhead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.tutoravatar{
+  flex:0 0 auto;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+  background:var(--pen-blue);color:#fff;font-family:var(--mono);font-weight:700;font-size:12px;
+}
+.tutortitle{flex:1;min-width:0}
+.tt-name{font-family:var(--ui);font-weight:700;font-size:15.5px;color:var(--graphite)}
+.tt-sub{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* การ์ดอ้างอิงโจทย์ที่กำลังคุยถึง */
+.ctxcard{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:12px 14px;margin-bottom:14px;
+}
+.ctx-row{display:flex;gap:8px;font-size:13px;line-height:1.6;padding:3px 0}
+.ctx-k{flex:0 0 44px;font-family:var(--ui);font-weight:700;color:var(--muted);font-size:11.5px;padding-top:1px}
+.ctx-v{color:var(--graphite)}
+.ctx-v.ok{font-family:var(--mono);font-weight:600;color:var(--pen-green)}
+
+/* ปุ่มลัดคำถาม */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;-webkit-overflow-scrolling:touch}
+.chip{
+  flex:0 0 auto;font-family:var(--ui);font-size:12.5px;font-weight:700;color:var(--pen-blue);
+  background:color-mix(in srgb,var(--pen-blue) 8%,var(--card));border:1px solid color-mix(in srgb,var(--pen-blue) 30%,var(--line));
+  border-radius:99px;padding:7px 13px;cursor:pointer;white-space:nowrap;
+}
+.chip:active{transform:translateY(1px)}
+
+/* รูปที่แนบในบับเบิลแชท */
+.bubimg{display:block;max-width:100%;max-height:220px;border-radius:8px;margin-bottom:8px;object-fit:cover}
+
+/* พรีวิวรูปก่อนส่ง */
+.imgpreview{
+  display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:8px 10px;
+  background:var(--card);border:1px solid var(--line);border-radius:10px;
+}
+.imgpreview img{width:44px;height:44px;border-radius:6px;object-fit:cover;flex:0 0 auto}
+.imgpreview span{flex:1;font-size:12px;color:var(--muted);line-height:1.5}
+.imgpreview button{
+  flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);
+  background:var(--paper);color:var(--muted);cursor:pointer;font-size:12px;
+}
+
+/* ---------- Stitch pass 3: layout (not just tokens) ----------
+   อ้างอิง HTML จริงจาก .stitch-cache/ ของโปรเจกต์ Softomni Professional Dashboard
+   testhub / tutor / settings / graphsdetail / functest / review — โครงหน้าจอ ไม่ใช่แค่สี */
+
+body.wide-app #app{max-width:1080px}
+@media (min-width:880px){
+  body.wide-app #app{max-width:1080px}
+}
+
+/* ห้องคุยติวเตอร์: เต็มความสูง แชทเลื่อนได้ อินพุตติดล่าง — อ้างอิง stitch-cache/tutor.html */
+body.tutor-mode{padding-bottom:0}
+body.tutor-mode #app{
+  max-width:none;margin:0;padding:0;
+  display:flex;flex-direction:column;
+  min-height:calc(100dvh - 54px);
+}
+@media (max-width:879px){
+  body.tutor-mode #topbar{display:none}
+  body.tutor-mode #tabbar{display:none}
+  body.tutor-mode #app{min-height:100dvh}
+}
+@media (min-width:880px){
+  body.tutor-mode #app{
+    margin-left:var(--side-w);
+    min-height:100dvh;
+  }
+}
+.tutorpage{display:flex;flex-direction:column;flex:1;min-height:0;background:var(--card)}
+.tutorpage .tutorhead{
+  flex:0 0 auto;margin:0;padding:10px 16px;
+  border-bottom:1px solid var(--line);background:var(--paper);
+}
+.tutorpage .ctxcard{margin:12px 16px 0}
+.tutorpage .teachcard-inchat{
+  margin:10px 16px 0;padding:12px 14px;flex:0 0 auto;
+}
+.tutorpage .teachcard-inchat p{margin:0 0 6px;font-size:13.5px}
+.tutorpage .teachcard-inchat .teachlist{margin:0}
+.tutorpage .teachcard-inchat .teachlist li{font-size:13px;margin:0 0 4px}
+.tutorpage .chat{
+  flex:1;min-height:0;max-height:none;
+  padding:16px 16px 8px;gap:16px;
+  background:var(--card);
+}
+.chatrow{display:flex;gap:12px;max-width:720px;align-items:flex-start}
+.chatrow.me{align-self:flex-end;flex-direction:row-reverse}
+.chatrow .bub{max-width:100%}
+.chatmeta{font-size:11.5px;color:var(--muted);margin-bottom:4px}
+.datediv{display:flex;justify-content:center;margin:4px 0 8px}
+.datediv span{
+  font-size:11.5px;color:var(--muted);background:var(--paper);
+  border:1px solid var(--line);border-radius:99px;padding:4px 12px;
+}
+.chips-inchat{margin-left:46px;padding-bottom:0;flex-wrap:wrap;overflow:visible}
+.askbar{
+  flex:0 0 auto;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:var(--paper);border-top:1px solid var(--line);
+}
+.askpill{
+  display:flex;align-items:flex-end;gap:8px;
+  max-width:880px;margin:0 auto;
+  background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:6px;
+}
+.askpill:focus-within{border-color:var(--graphite);box-shadow:0 0 0 3px color-mix(in srgb,var(--pen-blue) 18%,transparent)}
+.askpill textarea{
+  flex:1;width:auto;min-height:40px;max-height:120px;resize:none;border:0;padding:10px 8px;
+  font-family:var(--body);font-size:15px;font-weight:400;background:transparent;color:var(--graphite);
+  box-shadow:none;
+}
+.askpill textarea:focus{outline:none;border:0;box-shadow:none}
+.askbar .note{text-align:center;margin-top:8px}
+
+/* ศูนย์ทดสอบ: การ์ดแนะนำ + รายการจัดกลุ่ม + แผงสถิติ — testhub.html */
+.hub{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
+@media (min-width:880px){
+  .hub{grid-template-columns:minmax(0,1fr) 280px}
+}
+.coursegrid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:22px}
+@media (min-width:640px){
+  .coursegrid{grid-template-columns:1fr 1fr}
+}
+.coursecard{
+  display:flex;flex-direction:column;text-align:left;cursor:pointer;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:16px;min-height:180px;font-family:var(--body);color:var(--graphite);
+}
+.coursecard:hover{box-shadow:var(--shadow-ambient)}
+.coursecard .cc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.coursecard h3{font-family:var(--ui);font-size:17px;font-weight:700;line-height:1.35;margin:0 0 6px}
+.coursecard .cc-desc{font-size:13.5px;color:var(--muted);line-height:1.55;flex:1}
+.coursecard .cc-foot{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-top:14px;padding-top:10px;border-top:1px solid var(--line);
+}
+.coursecard .cc-meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.topiclist{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:8px}
+.topicgroup-h{
+  display:flex;align-items:center;gap:8px;
+  background:var(--paper);padding:8px 14px;
+  font-family:var(--ui);font-size:11.5px;font-weight:700;letter-spacing:.4px;
+  color:var(--muted);text-transform:uppercase;
+}
+.topicrow{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;padding:14px 16px;border-top:1px solid var(--line);
+  background:var(--card);cursor:pointer;text-align:left;font-family:var(--body);color:var(--graphite);
+}
+.topicrow:hover{background:var(--paper)}
+.topicrow .t{display:block;font-family:var(--ui);font-weight:600;font-size:14.5px}
+.topicrow .d{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.topicrow .go{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--pen-blue);
+  border:1px solid var(--pen-blue);background:transparent;border-radius:6px;padding:6px 12px;cursor:pointer}
+.statpanel{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px;
+}
+@media (min-width:880px){
+  .statpanel{position:sticky;top:72px}
+}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 18px}
+.statcell{background:var(--paper);border-radius:8px;padding:10px}
+.statcell .k{font-size:11.5px;color:var(--muted);margin-bottom:4px}
+.statcell .v{font-family:var(--ui);font-size:22px;font-weight:700}
+.statcell .v span{font-size:13px;font-weight:500;color:var(--muted)}
+.recentrow{display:flex;align-items:center;gap:10px;padding:8px 0}
+.recentico{
+  width:32px;height:32px;border-radius:50%;background:var(--paper);
+  display:grid;place-items:center;font-size:14px;flex:0 0 auto;
+}
+
+/* แผนที่หน่วย: หัวการ์ด + แถวปัจจุบันเด่น — graphsdetail.html */
+.topichead{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:20px;margin-bottom:22px;position:relative;overflow:hidden;
+}
+.topichead::after{
+  content:'';position:absolute;right:0;top:0;width:40%;height:100%;
+  background:linear-gradient(to left,color-mix(in srgb,var(--graphite) 5%,transparent),transparent);
+  pointer-events:none;
+}
+.topichead-row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;position:relative;z-index:1}
+.lessonrow{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;padding:14px 16px;margin-bottom:10px;text-align:left;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  font-family:var(--body);color:var(--graphite);cursor:pointer;
+}
+.lessonrow .lr-left{display:flex;align-items:center;gap:12px;min-width:0}
+.lessonico{
+  width:40px;height:40px;border-radius:50%;flex:0 0 40px;
+  display:grid;place-items:center;background:var(--paper);border:1px solid var(--line);font-size:16px;
+}
+.lessonrow.done .lessonico{background:color-mix(in srgb,var(--pen-green) 14%,var(--card));border-color:color-mix(in srgb,var(--pen-green) 35%,var(--line))}
+.lessonrow.current{
+  border-color:var(--graphite);box-shadow:var(--shadow-ambient);position:relative;
+}
+.lessonrow.current::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--graphite);border-radius:var(--radius) 0 0 var(--radius);
+}
+.lessonrow.current .lessonico{background:color-mix(in srgb,var(--graphite) 8%,var(--card));border-color:var(--graphite)}
+.lessonrow.locked{opacity:.55;cursor:default}
+.lessonrow .t{display:block;font-family:var(--ui);font-weight:700;font-size:14.5px}
+.lessonrow .d{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+
+/* ตั้งค่า: สองคอลัมน์ — settings.html */
+.settings-grid{display:grid;grid-template-columns:1fr;gap:20px}
+@media (min-width:880px){
+  .settings-grid{grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr)}
+}
+.settings-sec{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:20px;margin-bottom:0;
+}
+.settings-sec .goalcards{grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:559px){
+  .settings-sec .goalcards{grid-template-columns:1fr}
+}
+.profile-row{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.avatar-xl{
+  width:88px;height:88px;border-radius:50%;display:grid;place-items:center;
+  background:var(--graphite);color:#fff;font-family:var(--ui);font-weight:700;font-size:32px;
+}
+.fieldgrid{flex:1;min-width:200px;display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:560px){
+  .fieldgrid{grid-template-columns:1fr 1fr}
+}
+.fieldgrid label{margin:0}
+.togglerow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0}
+.togglerow + .togglerow{border-top:1px solid var(--line)}
+.acctbtn{
+  display:flex;align-items:center;justify-content:space-between;width:100%;
+  padding:12px 14px;margin-bottom:8px;border-radius:var(--radius);
+  border:1px solid var(--line);background:var(--card);cursor:pointer;
+  font-family:var(--ui);font-size:14px;color:var(--graphite);text-align:left;
+}
+.acctbtn:hover{background:var(--paper)}
+
+/* แถบทำข้อสอบ: ตัวนับ + นาฬิกา + ข้าม/แจ้งปัญหา — functest.html */
+.testhead{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.testhead .pbar{flex:1;min-width:80px}
+.testclock{
+  font-family:var(--mono);font-weight:700;font-size:15px;
+  background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px 10px;
+}
+.testactions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+.testactions .linkish{
+  background:none;border:0;cursor:pointer;font-family:var(--ui);font-size:13px;color:var(--muted);
+  text-decoration:underline;padding:4px;
+}
+.reviewlist{display:flex;flex-direction:column;gap:8px;text-align:left}
+.reviewitem{
+  display:flex;align-items:flex-start;gap:12px;padding:12px;
+  border:1px solid var(--line);border-radius:var(--radius);background:var(--card);
+}
+.reviewitem.bad{border-color:color-mix(in srgb,var(--pen-red) 35%,var(--line));background:color-mix(in srgb,var(--pen-red) 5%,var(--card))}
+.reviewico{
+  width:32px;height:32px;border-radius:50%;flex:0 0 32px;display:grid;place-items:center;font-size:14px;
+}
+.reviewitem.ok .reviewico{background:color-mix(in srgb,var(--pen-green) 16%,var(--card));color:var(--pen-green)}
+.reviewitem.bad .reviewico{background:color-mix(in srgb,var(--pen-red) 16%,var(--card));color:var(--pen-red)}
+.scorecircle{
+  width:120px;height:120px;border-radius:50%;margin:8px auto 16px;
+  display:grid;place-items:center;
+  border:8px solid var(--line);font-family:var(--mono);font-size:28px;font-weight:700;
+}
+.scorecircle.hi{border-color:var(--pen-green);color:var(--pen-green)}
+.scorecircle.mid{border-color:var(--pen-blue);color:var(--pen-blue)}
+.goalbanner{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:20px;margin-bottom:18px;
+}
+.modgrid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:8px}
+@media (min-width:640px){
+  .modgrid{grid-template-columns:1fr 1fr}
+}
+@media (min-width:960px){
+  .modgrid{grid-template-columns:1fr 1fr 1fr}
+}
+.modcard{
+  display:flex;flex-direction:column;text-align:left;cursor:pointer;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:14px;min-height:200px;font-family:var(--body);color:var(--graphite);
+}
+.modcard:hover{box-shadow:var(--shadow-ambient)}
+.modcard.current{border-color:var(--graphite);box-shadow:var(--shadow-ambient)}
+.modcard.locked{opacity:.55;cursor:default}
+.modcard.done{opacity:.92}
+.mod-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.mod-ico{
+  width:36px;height:36px;border-radius:8px;display:grid;place-items:center;
+  background:var(--paper);border:1px solid var(--line);font-size:18px;
+}
+.modcard.current .mod-ico{background:color-mix(in srgb,var(--graphite) 8%,var(--card));border-color:var(--graphite)}
+.modcard h3{font-family:var(--ui);font-size:16px;font-weight:700;margin:0 0 6px;line-height:1.35}
+.mod-foot{margin-top:auto;padding-top:10px}
+
+@media (min-width:560px){
+  .choices.cols2{grid-template-columns:1fr 1fr}
+}
+
+/* หน้าโหลดตอนกดเข้า Mock — เห็นทันทีระหว่างจัดชุดข้อสอบ */
+.mockloading{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;text-align:center;min-height:56vh;padding:24px}
+.mockloading h2{margin:0;font-size:19px}
+.mockloading .btn{margin-top:8px;width:auto}
+.spinner{width:42px;height:42px;border-radius:50%;
+  border:3px solid var(--line);border-top-color:var(--pen-blue);
+  animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:2.4s}}
+
+/* หน้าเตรียมข้อสอบ — วงแหวนสามวงหมุนไล่กัน บอกว่ายังทำงานอยู่ ไม่ได้ค้าง */
+.prepring{position:relative;width:60px;height:60px}
+.prepring span{position:absolute;inset:0;border-radius:50%;
+  border:3px solid transparent;border-top-color:var(--pen-blue);
+  animation:spin 1.4s linear infinite}
+.prepring span:nth-child(2){inset:9px;border-top-color:var(--pen-red);animation-duration:1.9s}
+.prepring span:nth-child(3){inset:18px;border-top-color:var(--muted);animation-duration:2.6s}
+.prepstep{margin:0;color:var(--muted);font-size:14px;min-height:20px}
+@media (prefers-reduced-motion:reduce){.prepring span{animation-duration:3.4s}}
+
+/* เวลาเหลือน้อยกว่าห้านาที ต้องเห็นชัดจากหางตา */
+.pill.warn{color:var(--pen-red);border-color:var(--pen-red);font-weight:700}
+.banner.warn{border-color:var(--pen-red);color:var(--pen-red)}
+
+/* แถวเดินข้อในห้องสอบ: ย้อน · ข้าม · ถัดไป กว้างพอให้กดไม่พลาด */
+.examnav{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px}
+.examnav .btn{width:100%;margin:0}
+.examnav .btn[disabled]{opacity:.4;pointer-events:none}
+
+/* รูปประกอบโจทย์ วาดเป็น SVG จะได้คมทุกจอและตามธีมมืด/สว่าง */
+.qfig{margin:12px 0;text-align:center}
+.qfig svg{width:100%;max-width:340px;height:auto}
+.qfig-axis{stroke:var(--muted);stroke-width:1;opacity:.7}
+.qfig-line{fill:none;stroke:var(--pen-blue);stroke-width:2.5;stroke-linejoin:round}
+.qfig-dot{fill:var(--pen-red)}
+.qfig figcaption{color:var(--muted);font-size:13px;margin-top:4px}
+
+/* ชุดข้อสอบพร้อมแล้ว ต้องเห็นชัดว่าไม่ต้องรอต่อ */
+.banner.ready{border-color:var(--pen-blue);color:var(--pen-blue-d);font-weight:600}
+
+/* กล่องกำลังคำนวณผล จงใจไม่มีปุ่มให้กดจนกว่าจะเสร็จ */
+.calcbox{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 12px}
+.calcbox p{margin:0;text-align:center}
+
+/* แถบเตือนให้ทำแบบทดสอบวัดระดับ ขึ้นทุกหน้าจนกว่าจะทำ */
+.pretestnag{border-color:var(--pen-blue);margin-bottom:14px}
+.pretestnag b{color:var(--pen-blue-d)}
+
+/* รายการจุดแข็ง/จุดอ่อนรายสาระ */
+.tlist{margin:8px 0 0;padding-left:18px}
+.tlist li{margin:4px 0;font-size:14px}
+
+/* หัวข้อย่อยที่ยังไม่ปลด — กดได้ แต่บอกเงื่อนไขแทนการเข้าเรียน */
+.topicrow.locked{opacity:.55}
+.topicrow.locked .go{color:var(--muted)}
+
+/* แถวหัวข้อย่อย: ปุ่มเรียนเต็มแถว + ปุ่มฝึกโควตาข้อด้านล่าง */
+.subrow{margin-bottom:8px}
+.subrow .topicrow{margin-bottom:0}
+.subrow .subdrill{width:auto;margin:6px 0 0 auto;display:block}
+.subrow.locked{opacity:.55}
+.subrow.locked .go{color:var(--muted)}
+
+/* ขั้นบทเรียนในห้องติว: สอน -> ฝึก -> สรุป -> จบ */
+.stagebar{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px 0}
+.stagechip{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;
+  border:1px solid var(--line);color:var(--muted);background:var(--card)}
+.stagechip.on{color:#fff;background:var(--pen-blue);border-color:var(--pen-blue)}
+.stagechip.past{color:var(--pen-blue);border-color:var(--pen-blue)}
+.stageact{display:flex;gap:8px;flex-wrap:wrap;padding:8px 14px 0}
+.stageact .btn{width:auto}
+
+/* ตารางค่าความจริงแบบกดเล่นได้ */
+.truthtable{width:100%;border-collapse:collapse;font-size:13.5px}
+.truthtable td{padding:6px 8px;border-top:1px solid var(--line)}
+.truthtable td:last-child{text-align:right}
+.tv{font-weight:700}
+.tv.t{color:#059669}
+.tv.f{color:#dc2626}
+
+/* แผงถาม AI ที่เปิดคาหน้าข้อสอบ Mock — ไม่ต้องออกจากข้อสอบ */
+.askpanel{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.askpanel input[type=text]{flex:1}
+.askchat{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:320px;overflow-y:auto}
+.askmsg{padding:8px 11px;border-radius:12px;font-size:13.5px;line-height:1.65;white-space:pre-wrap}
+.askmsg.me{align-self:flex-end;background:var(--pen-blue);color:#fff;border-bottom-right-radius:4px}
+.askmsg.ai{align-self:flex-start;background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:4px}
+
+/* ตารางกระดานจัดอันดับ */
+.boardtable{width:100%;border-collapse:collapse;font-size:13.5px}
+.boardtable td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:middle}
+.boardtable tr:first-child td{border-top:0}
+.boardtable tr.me{background:color-mix(in srgb,var(--pen-blue) 10%,transparent)}
+.boardtable .rk{width:44px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.boardtable tr:nth-child(-n+3) .rk{color:var(--pen-blue)}
+.boardtable .val{text-align:right;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.boardtable .sub2{text-align:right;color:var(--muted);font-size:12px;white-space:nowrap}
+
+/* แถบหมวดของกระดานจัดอันดับ */
+.boardcats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.boardcat{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;
+  border:1.5px solid var(--line);border-radius:14px;background:var(--card);cursor:pointer;
+  font-family:var(--ui);font-size:12.5px;font-weight:600;color:var(--graphite)}
+.boardcat:hover{border-color:color-mix(in srgb,var(--pen-blue) 45%,var(--line))}
+.boardcat.on{border-color:var(--pen-blue);background:color-mix(in srgb,var(--pen-blue) 10%,var(--card));color:var(--pen-blue)}
+.boardcat .bc-ic{font-size:18px;line-height:1}
+.boardtable .val .unit{font-weight:500;color:var(--muted);font-size:11.5px}
+@media (min-width:560px){.boardcats{grid-template-columns:repeat(6,1fr)}}
+
+/* OCR review: preserve source layout and keep wide formulas scrollable. */
+.ocr-panel { margin: 20px 0; padding: 18px; border: 1px solid #a8b8d0; border-radius: 16px; }
+.ocr-panel h2 { margin-top: 0; font-size: 18px; }
+.ocr-panel textarea { min-height: 180px; }
+.ocr-preview { white-space: pre-wrap; overflow-x: auto; padding: 14px; margin: 12px 0; border: 1px solid #a8b8d0; border-radius: 10px; line-height: 1.8; }
+.ocr-panel [hidden] { display: none !important; }
+
+.daily-item { padding:14px 0; border-top:1px solid var(--line); }
+.daily-plan select { display:inline-block; width:auto; margin:0 6px; }
+.learning-content { line-height:1.9; }
+.learning-content li { margin-bottom:10px; }
+.learning-content .btn { margin:10px 8px 4px 0; }
+.learning-formula { padding:18px; overflow:auto; border:1px solid var(--line); border-radius:12px; }
+.learning-content input { margin-bottom:10px; }
+
+.personal-options{display:flex;gap:12px;flex-wrap:wrap}.personal-options label{display:grid;gap:6px;flex:1;min-width:160px}.personal-options select{width:100%;padding:10px;border:1px solid #ccd6e3;border-radius:10px;background:var(--card,#fff);color:inherit}

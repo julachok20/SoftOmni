@@ -1,0 +1,8 @@
+email-templates/
+*.md
+.stitch-cache/
+
+# Private OCR corpus and developer-only tools
+tools/
+supabase/
+.env*

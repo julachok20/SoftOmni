@@ -1,0 +1,24 @@
+.vercel
+.env
+.env.*
+!.env.example
+.stitch-cache/
+exams/inventory.json
+exams/*.pdf
+exams/profiles.json
+
+# Private source OCR, scans, and copyrighted exam corpus
+tools/exam-corpus/_private/
+tools/exam-extract/_work/
+tools/exam-extract/out/
+
+# Local Supabase CLI state
+supabase/.temp/
+
+# OS / editor / Python
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+__pycache__/
+*.pyc

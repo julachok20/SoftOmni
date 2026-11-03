@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SoftOmni — เรียนคณิต ม.1–ม.6</title>
+<meta name="description" content="เรียนคณิตศาสตร์ ม.1–ม.6 ตามหลักสูตรกระทรวงศึกษาธิการ แบบเล่นเกม มีติวเตอร์ AI แนบรูปโจทย์ได้ Learn anytime. Understand better. Succeed together.">
+<meta name="theme-color" content="#f5f7fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c1120" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Looped Thai (แบบมีหัว) สำหรับเนื้อความ อ่านง่ายกว่าสำหรับนักเรียนไทย
+     ถ้าโหลดฟอนต์ไม่ได้ จะถอยไปใช้ฟอนต์ระบบตามลำดับใน --body / --ui -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600;700&family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<!-- KaTeX เรนเดอร์สมการ LaTeX ($...$) ที่ติวเตอร์ AI ตอบมา ให้เป็นสัญลักษณ์คณิตศาสตร์จริง -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<!-- ?v= บังคับให้เบราว์เซอร์โหลดไฟล์ใหม่เมื่อแก้ไข เพิ่มเลขนี้ทุกครั้งที่ deploy -->
+<link rel="stylesheet" href="style.css?v=77">
+<link rel="icon" href="assets/mark-64.png?v=77">
+<link rel="apple-touch-icon" href="assets/mark-256.png?v=77">
+</head>
+<body>
+  <header id="topbar"></header>
+  <main id="app"></main>
+  <nav id="tabbar"></nav>
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="curriculum.js?v=77"></script>
+  <script src="alevel.js?v=77"></script>
+  <script src="sync.js?v=77"></script>
+  <script src="tutor.js?v=77"></script>
+  <script src="assets/vendor/pdf-lib-1.17.1.min.js"></script>
+  <script src="ocr.js?v=77"></script>
+  <script src="learning.js?v=77"></script>
+  <script src="personal-path.js?v=77"></script>
+  <script src="app.js?v=77"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+const {chromium}=require('C:/Users/julachok/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');const assert=require('assert/strict');
+(async()=>{const b=await chromium.launch({headless:true,executablePath:'C:/Users/julachok/AppData/Local/ms-playwright/chromium-1223/chrome-win64/chrome.exe'});try{const p=await b.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://xhkyaasgezqalsymnryg.supabase.co/**',r=>r.fulfill({contentType:'application/json',body:'[]'}));await p.goto('http://127.0.0.1:8610/#/topic/func');await p.waitForSelector('.personal-preferences');
+assert.equal(await p.evaluate(()=>topicSubLessons(alevelTopic('func')).filter(s=>s.tier===1&&s.open).length),1);
+await p.selectOption('select[aria-label="style"]','examples');await p.selectOption('select[aria-label="interest"]','games');
+await p.evaluate(()=>{Cloud.state={email:"test@example.invalid"};Cloud.signedIn=()=>true;window.originalAsk=Tutor.ask;Tutor.ask=async function(message,context){window.lastContext=PersonalPath.context();return 'อธิบายตัวอย่าง $2+3=5$ ทีละขั้น';};startSubLesson('func','func:k0');});
+await p.waitForFunction(()=>!Tutor.busy&&Tutor.history.length>0);
+assert.ok((await p.evaluate(()=>window.lastContext)).includes('เกม'));
+await p.evaluate(async()=>{const prev=sbFetch;sbFetch=async (url,opts)=>{window.sentPayload=JSON.parse(opts.body);return {ok:true,json:async()=>({text:'ok'})};};try{await window.originalAsk('hello','existing context',null);}finally{sbFetch=prev;}});assert.ok((await p.evaluate(()=>window.sentPayload.context)).includes('existing context'));assert.ok((await p.evaluate(()=>window.sentPayload.context)).includes('เกม'));
+assert.equal(await p.evaluate(()=>PersonalPath.finish()),false);
+await p.getByRole('button',{name:'ดูตัวอย่างพร้อมวิธีคิด',exact:true}).click();await p.waitForFunction(()=>!Tutor.busy);
+await p.getByRole('button',{name:'ลองทำพร้อมคำใบ้',exact:true}).click();await p.waitForFunction(()=>!Tutor.busy);
+await p.getByRole('button',{name:'พร้อมแล้ว ลองทำเอง',exact:true}).click();await p.waitForFunction(()=>!Tutor.busy);
+assert.equal(await p.evaluate(()=>PersonalPath.complete('func:k0')),false);
+for(let i=0;i<3;i++){await p.evaluate(()=>sendToTutor('คำตอบของฉันคือ 5',null,null));await p.waitForFunction(()=>!Tutor.busy);}
+await p.getByRole('button',{name:'พอแล้ว ขอสรุปบทนี้',exact:true}).click();await p.waitForFunction(()=>!Tutor.busy);
+await p.getByRole('button',{name:'จบบทเรียนนี้',exact:true}).click();await p.waitForSelector('.personal-preferences');
+assert.equal(await p.evaluate(()=>PersonalPath.complete('func:k0')),true);
+assert.equal(await p.evaluate(()=>topicSubLessons(alevelTopic('func'))[1].open),true);
+assert.equal(await p.evaluate(()=>topicTestOpen(alevelTopic('func'))),false);
+await p.evaluate(()=>{S.subProgress['func:k0']={best:90,practicePassed:true};startSubLesson('func','func:k0');});await p.waitForFunction(()=>!Tutor.busy);
+assert.equal(await p.evaluate(()=>S.subProgress['func:k0'].best),90);
+await p.evaluate(()=>{Cloud.state={user_id:'different-user',email:'other@example.invalid'};});assert.equal(await p.evaluate(()=>PersonalPath.complete('func:k0')),false);assert.equal(await p.evaluate(()=>PersonalPath.prefs().style),'steps');
+await p.evaluate(()=>{Cloud.state={email:"test@example.invalid"};go('#/topic/func');});await p.waitForSelector('.personal-preferences');await p.setViewportSize({width:390,height:844});assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await p.screenshot({path:'work/personal-path/mobile.png',fullPage:true});assert.deepEqual(errors,[]);console.log('PASS ordered path, actual staged AI flow, preference context, activity gates, no false assessment pass, preserved progress, account isolation and mobile layout');}finally{await b.close();}})().catch(e=>{console.error(e);process.exit(1)});

@@ -1,0 +1,5 @@
+# SoftOmni — local function source only. Secrets stay in the dashboard, not here.
+project_id = "xhkyaasgezqalsymnryg"
+
+[functions.tutor]
+verify_jwt = true

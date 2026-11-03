@@ -1,0 +1,10 @@
+const {PGlite}=require('../exam-corpus/runtime/node_modules/@electric-sql/pglite');const fs=require('fs'),assert=require('assert/strict');
+(async()=>{const db=new PGlite();await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated;grant execute on function auth.uid() to authenticated;insert into auth.users values('00000000-0000-4000-8000-000000000001'),('00000000-0000-4000-8000-000000000002');`);await db.exec(fs.readFileSync('work/learning-upgrade/schema.sql','utf8'));
+await db.exec("set role authenticated;set request.jwt.claim.sub='00000000-0000-4000-8000-000000000001';");
+const evidence=JSON.stringify({version:'core-1',results:Array(5).fill({correct:true})});
+await db.query("insert into learning_attempts(id,user_id,topic,evidence) values('00000000-0000-4000-8000-000000000003','00000000-0000-4000-8000-000000000001','real',$1)",[evidence]);
+await assert.rejects(()=>db.query("insert into learning_attempts(id,user_id,topic,evidence) values('00000000-0000-4000-8000-000000000004','00000000-0000-4000-8000-000000000002','real',$1)",[evidence]));
+assert.equal((await db.query('select * from learning_attempts')).rows.length,1);
+await db.exec("set request.jwt.claim.sub='00000000-0000-4000-8000-000000000002';");assert.equal((await db.query('select * from learning_attempts')).rows.length,0);
+await assert.rejects(()=>db.exec('delete from learning_attempts'));await db.exec('reset role;set role anon');await assert.rejects(()=>db.exec('select * from learning_attempts'));
+console.log('PASS: owner insert/read, other-account isolation, forged owner rejected, immutable attempts, anonymous access denied');await db.close();})().catch(e=>{console.error(e);process.exitCode=1;});
